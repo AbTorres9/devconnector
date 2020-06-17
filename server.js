@@ -3,6 +3,7 @@ const app = express();
 
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const passport = require("passport");
 
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
@@ -24,9 +25,11 @@ db.once("open", () => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.json("Hello");
-});
+//PASSPORT MIDDLEWARE
+app.use(passport.initialize());
+
+//PASSPORT CONFIG
+require("./config/passport")(passport);
 
 //USE ROUTES
 app.use("/api/users", users);
@@ -38,5 +41,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, (req, res) => {
   console.log("Server is up and running");
 });
-
-
