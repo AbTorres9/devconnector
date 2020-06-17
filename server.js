@@ -1,14 +1,15 @@
 const express = require("express");
+const app = express();
+
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 
-const app = express();
-
 //DB CONFIG
-mongoose.connect("mongodb://localhost:27017/devconnectorapp", {
+mongoose.connect("mongodb://localhost:27017/devconnector", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
@@ -18,6 +19,10 @@ db.on("error", console.error.bind(console, "connection error"));
 db.once("open", () => {
   console.log("we are connected!");
 });
+
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.json("Hello");
@@ -33,3 +38,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, (req, res) => {
   console.log("Server is up and running");
 });
+
+
