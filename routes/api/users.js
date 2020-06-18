@@ -6,7 +6,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 
+//LOAD INPUT VALIDATION
 const validateRegisterInput = require("../../validation/register");
+const validateLoginInput = require("../../validation/login");
 
 const User = require("../../models/User");
 const keys = require("../../config/keys");
@@ -64,6 +66,13 @@ router.post("/register", (req, res) => {
 // @desc    LOGIN USER/ RETURNING JWT TOKEN
 // @access  PUBLIC
 router.post("/login", (req, res) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  //CHECK VALIDATION
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -89,11 +98,13 @@ router.post("/login", (req, res) => {
             }
           );
         } else {
-          return res.status(400).json({ password: "Password incorrect" });
+          errors.password = "Password incorrect";
+          return res.status(400).json(errors);
         }
       });
     } else {
-      return res.status(404).json({ email: "user not found" });
+      errors.email = "User not found";
+      return res.status(404).json(errors);
     }
   });
 });
