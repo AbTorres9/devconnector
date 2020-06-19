@@ -10,6 +10,7 @@ const User = require("../../models/User");
 //LOAD VALIDATION
 const validateProfileInput = require("../../validation/profile");
 const validateExperienceInput = require("../../validation/experience");
+const validateEducationInput = require("../../validation/education");
 
 router.get("/test", (req, res) => {
   res.json({ msg: "Profile Works" });
@@ -205,8 +206,8 @@ router.post(
 // @desc    Add education to profile
 // @access  Private
 router.post(
-  '/education',
-  passport.authenticate('jwt', { session: false }),
+  "/education",
+  passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { errors, isValid } = validateEducationInput(req.body);
 
@@ -216,7 +217,7 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ user: req.user.id }).then(profile => {
+    Profile.findOne({ user: req.user.id }).then((profile) => {
       const newEdu = {
         school: req.body.school,
         degree: req.body.degree,
@@ -224,13 +225,13 @@ router.post(
         from: req.body.from,
         to: req.body.to,
         current: req.body.current,
-        description: req.body.description
+        description: req.body.description,
       };
 
       // Add to exp array
       profile.education.unshift(newEdu);
 
-      profile.save().then(profile => res.json(profile));
+      profile.save().then((profile) => res.json(profile));
     });
   }
 );
@@ -239,23 +240,23 @@ router.post(
 // @desc    Delete experience from profile
 // @access  Private
 router.delete(
-  '/experience/:exp_id',
-  passport.authenticate('jwt', { session: false }),
+  "/experience/:exp_id",
+  passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id })
-      .then(profile => {
+      .then((profile) => {
         // Get remove index
         const removeIndex = profile.experience
-          .map(item => item.id)
+          .map((item) => item.id)
           .indexOf(req.params.exp_id);
 
         // Splice out of array
         profile.experience.splice(removeIndex, 1);
 
         // Save
-        profile.save().then(profile => res.json(profile));
+        profile.save().then((profile) => res.json(profile));
       })
-      .catch(err => res.status(404).json(err));
+      .catch((err) => res.status(404).json(err));
   }
 );
 
@@ -263,23 +264,23 @@ router.delete(
 // @desc    Delete education from profile
 // @access  Private
 router.delete(
-  '/education/:edu_id',
-  passport.authenticate('jwt', { session: false }),
+  "/education/:edu_id",
+  passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id })
-      .then(profile => {
+      .then((profile) => {
         // Get remove index
         const removeIndex = profile.education
-          .map(item => item.id)
+          .map((item) => item.id)
           .indexOf(req.params.edu_id);
 
         // Splice out of array
         profile.education.splice(removeIndex, 1);
 
         // Save
-        profile.save().then(profile => res.json(profile));
+        profile.save().then((profile) => res.json(profile));
       })
-      .catch(err => res.status(404).json(err));
+      .catch((err) => res.status(404).json(err));
   }
 );
 
@@ -287,8 +288,8 @@ router.delete(
 // @desc    Delete user and profile
 // @access  Private
 router.delete(
-  '/',
-  passport.authenticate('jwt', { session: false }),
+  "/",
+  passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOneAndRemove({ user: req.user.id }).then(() => {
       User.findOneAndRemove({ _id: req.user.id }).then(() =>
